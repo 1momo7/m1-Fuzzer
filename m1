@@ -71,7 +71,7 @@ def req(url):
     responselength = len(r.text)
     
     if r.status_code != 200 and r.status_code != 404:
-        print("\r", "FOUND:" ,url,"|" ,"STATUS CODE:",r.status_code,"|","Responselength:",responselength)
+        print("\r", "FOUND:" ,url,"|" ,"STATUS CODE:",r.status_code,"|","Responselength:",responselength)        # SORTING OUT NOT WORKING DIRECTORIES / SUBDOMAINS
     else:
         print("\r","Fuzzing...",url,end="                       ")
 #End Region
@@ -109,7 +109,7 @@ if ("FUZZ.") in domain:
         cprint("Invalid command. Try -help", 'red')
         exit()
     else:
-        with open("/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt") as data:
+        with open("/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt") as data:          # CHANGE THIS WORDLIST
             content = data.readlines()
             for sub in content:
                 cleansub = sub.replace("\n", "")
@@ -119,21 +119,21 @@ if ("FUZZ.") in domain:
 
 if ("/FUZZ") in domain:
     if ("apache" or "-apache") in inp:
-        with open("/usr/share/wordlists/dirbuster/apachewordlist") as data:
+        with open("/usr/share/wordlists/dirbuster/apachewordlist") as data:          # CHANGE THIS WORDLIST
             content = data.readlines()
             for word in content:
                 cleanword = word.replace("\n", "")
                 cleandomain = domain.replace("FUZZ", cleanword)
                 req(cleandomain)
     elif ("php" or "-php") in inp:
-        with open("/usr/share/wordlists/dirbuster/wordlistphp") as data:
+        with open("/usr/share/wordlists/dirbuster/wordlistphp") as data:          # CHANGE THIS WORDLIST
             content = data.readlines()
             for word in content:
                 cleanword = word.replace("\n", "")
                 cleandomain = domain.replace("FUZZ", cleanword)
                 req(cleandomain)
     else:
-        with open("/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt") as data:
+        with open("/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt") as data:          # CHANGE THIS WORDLIST
             content = data.readlines()
             for word in content:
                 cleanword = word.replace("\n", "")
