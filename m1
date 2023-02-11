@@ -2,12 +2,10 @@
 # Modules
 import requests, urllib3
 urllib3.disable_warnings()
-import sys
+import sys,os
 from termcolor import colored, cprint
 
 
-
-# M1 FUZZER
 cprint("""
 █                                                               github.com/1momo7
 
@@ -26,44 +24,67 @@ cprint("""
 """, 'white')
 
 
-
-# HTTP request
-
-def req(url):
-    try:
-        r = requests.get(url, verify=False)
-    except:
-        return
-    responselength = len(r.text)
-    
-    if r.status_code != 200 and r.status_code != 404:
-        print("\r", "FOUND:" ,url,"|" ,"STATUS CODE:",r.status_code,"|","Responselength:",responselength)        # SORTING OUT NOT WORKING DIRECTORIES / SUBDOMAINS
-    else:
-        print("\r","Fuzzing...",url,end="                       ")
-
-
-inp = input("M1: ")
+inp = input("M1 ---> ")
 domain = inp.split(" ")[0]
 
 
-if not ("http://") in inp:
+def req(xyz):
+    try:
+        r = requests.get(xyz, verify=False)
+    except KeyboardInterrupt:
+        cprint("k e y b o a r d   i n t e r r u p t ", "red")
+        sys.exit(0)
+    responselength = len(r.text)
+    
+
+    if r.status_code != 200 and r.status_code != 404:
+        print("\r", "FOUND:" ,xyz,"|" ,"STATUS CODE:",r.status_code,"|","Responselength:",responselength)
+    else:
+        print("\r","Fuzzing... ",xyz,end="                             ")
+
+
+def call_error():
     cprint("""Usage: 
     m1 
-    <url> [command]
+    <url/FUZZ> [command]
     
 Available Commands:
     FUZZ. /FUZZ       Uses fuzzing mode. Replaces the keyword FUZZ in the URL 
-    -php              Also fuzzing for php directories    | cant do both yet
-    -apache           Also fuzzing for apache directories | cant do both yet""", "blue")
+    -php              Also fuzzing for php directories    | can do both
+    -apache           Also fuzzing for apache directories | can do both
+    -git              Git repository for further help
+    -version          shows the current version
+    -help             Lists all possible Commands""", "blue")
+    exit() 
+
+
+if ("version") in inp:
+    cprint("0.3", "red")
     exit()
 
 
+if ("git") in inp:
+    cprint("https://github.com/1momo7/m1-Fuzzer","blue")
+    exit()
 
 
-# Target
 if not ("FUZZ") in domain:
-            print("Please include FUZZ to tell me what you are FUZZING for...")
+            cprint("Please include FUZZ to tell me what you are FUZZING for...", "red")
+            call_error()
             exit()
+
+
+if not ("http") in inp:
+    domain = "http://" + domain
+
+
+# WORDLISTS CHANGE THESE
+defaultsub_wl = "/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt"  # WORDLISTS CHANGE THESE
+apache_wl = "/usr/share/wordlists/dirbuster/apachewordlist" # WORDLISTS CHANGE THESE
+php_wl = "/usr/share/wordlists/dirbuster/wordlistphp" # WORDLISTS CHANGE THESE
+defaultdir_wl = "/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt" # WORDLISTS CHANGE THESE
+phpapache_mixedir = "/usr/share/wordlists/dirbuster/aphpache"
+# WORDLISTS CHANGE THESE
 
 
 if ("FUZZ.") in domain:
@@ -74,7 +95,7 @@ if ("FUZZ.") in domain:
         cprint("Invalid command. Try -help", 'red')
         exit()
     else:
-        with open("/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt") as data:          # CHANGE THIS WORDLIST
+        with open(defaultsub_wl) as data: # CHANGEABLE WORDLIST
             content = data.readlines()
             for sub in content:
                 cleansub = sub.replace("\n", "")
@@ -83,22 +104,29 @@ if ("FUZZ.") in domain:
 
 
 if ("/FUZZ") in domain:
+    if ("apache" and "php") in inp:
+        with open(phpapache_mixedir) as data: # CHANGEABLE WORDLIST
+            content = data.readlines()
+            for word in content:
+                cleanword = word.replace("\n", "")
+                cleandomain = domain.replace("FUZZ", cleanword)
+                req(cleandomain)
     if ("apache" or "-apache") in inp:
-        with open("/usr/share/wordlists/dirbuster/apachewordlist") as data:          # CHANGE THIS WORDLIST
+        with open(apache_wl) as data: # CHANGEABLE WORDLIST
             content = data.readlines()
             for word in content:
                 cleanword = word.replace("\n", "")
                 cleandomain = domain.replace("FUZZ", cleanword)
                 req(cleandomain)
     elif ("php" or "-php") in inp:
-        with open("/usr/share/wordlists/dirbuster/wordlistphp") as data:          # CHANGE THIS WORDLIST
+        with open(php_wl) as data: # CHANGEABLE WORDLIST
             content = data.readlines()
             for word in content:
                 cleanword = word.replace("\n", "")
                 cleandomain = domain.replace("FUZZ", cleanword)
-                req(cleandomain)
+                req(cleandomain)         
     else:
-        with open("/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt") as data:          # CHANGE THIS WORDLIST
+        with open(defaultdir_wl) as data: # CHANGEABLE WORDLIST
             content = data.readlines()
             for word in content:
                 cleanword = word.replace("\n", "")
@@ -106,6 +134,6 @@ if ("/FUZZ") in domain:
                 req(cleandomain)
 
 
-# Subdomains
+
 
  
