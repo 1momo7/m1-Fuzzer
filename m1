@@ -1,139 +1,235 @@
 #!/usr/bin/env python3
 # Modules
-import requests, urllib3
-urllib3.disable_warnings()
-import sys,os
-from termcolor import colored, cprint
+import requests, urllib3, random
+import sys
+from termcolor import cprint
+import yourproxies
+
+def all():
+    urllib3.disable_warnings()
+
+    # VISUALS
+    cprint("""
+                                                                    github.com/1momo7
 
 
-cprint("""
-█                                                               github.com/1momo7
-
-
-                           888b     d888  d888        8888888888 888     888 8888888888P 8888888888P 8888888888 8888888b.  
-                           8888b   d8888 d8888        888        888     888       d88P        d88P  888        888   Y88b 
-                           88888b.d88888   888        888        888     888      d88P        d88P   888        888    888 
-                           888Y88888P888   888        8888888    888     888     d88P        d88P    8888888    888   d88P 
-                           888 Y888P 888   888        888        888     888    d88P        d88P     888        8888888P"  
-                           888  Y8P  888   888        888        888     888   d88P        d88P      888        888 T88b   
-                           888   "   888   888        888        Y88b. .d88P  d88P        d88P       888        888  T88b  
-                           888       888 8888888      888         "Y88888P"  d8888888888 d8888888888 8888888888 888   T88b 
+                            888b     d888  d888        8888888888 888     888 8888888888P 8888888888P 8888888888 8888888b.  
+                            8888b   d8888 d8888        888        888     888       d88P        d88P  888        888   Y88b 
+                            88888b.d88888   888        888        888     888      d88P        d88P   888        888    888 
+                            888Y88888P888   888        8888888    888     888     d88P        d88P    8888888    888   d88P 
+                            888 Y888P 888   888        888        888     888    d88P        d88P     888        8888888P"  
+                            888  Y8P  888   888        888        888     888   d88P        d88P      888        888 T88b   
+                            888   "   888   888        888        Y88b. .d88P  d88P        d88P       888        888  T88b  
+                            888       888 8888888      888         "Y88888P"  d8888888888 d8888888888 8888888888 888   T88b 
+                                                                                                    
                                                                                                 
-                                                                                            
-                                                                github.com/yTarik0
-""", 'white')
+                                                                    github.com/yTarik0
+    """, 'white')
 
 
-inp = input("M1 ---> ")
-domain = inp.split(" ")[0]
+    # INPUT
+    inp = input("M1 ---> ")
+    domain = inp.split(" ")[0]
 
 
-def req(xyz):
-    try:
-        r = requests.get(xyz, verify=False)
-    except KeyboardInterrupt:
-        cprint("k e y b o a r d   i n t e r r u p t ", "red")
-        sys.exit(0)
-    responselength = len(r.text)
-    
+    # PROXY ROTATION 
+    def random_proxy():
+        proxy = random.choice(yourproxies.ips)
+        return proxy
 
-    if r.status_code != 200 and r.status_code != 404:
-        print("\r", "FOUND:" ,xyz,"|" ,"STATUS CODE:",r.status_code,"|","Responselength:",responselength)
-    else:
-        print("\r","Fuzzing... ",xyz,end="                             ")
+    proxy = random_proxy()
 
 
-def call_error():
-    cprint("""Usage: 
-    m1 
-    <url/FUZZ> [command]
-    
-Available Commands:
-    FUZZ. /FUZZ       Uses fuzzing mode. Replaces the keyword FUZZ in the URL 
-    -php              Also fuzzing for php directories    | can do both
-    -apache           Also fuzzing for apache directories | can do both
-    -git              Git repository for further help
-    -version          shows the current version
-    -help             Lists all possible Commands""", "blue")
-    exit() 
-
-
-if ("version") in inp:
-    cprint("0.3", "red")
-    exit()
-
-
-if ("git") in inp:
-    cprint("https://github.com/1momo7/m1-Fuzzer","blue")
-    exit()
-
-
-if not ("FUZZ") in domain:
-            cprint("Please include FUZZ to tell me what you are FUZZING for...", "red")
-            call_error()
+    # REQUEST WITH PROXIES
+    def reqprox(xyz):
+        try:
+            r = requests.get(xyz, proxies=proxy,verify=False)
+        except KeyboardInterrupt:
+            cprint("k e y b o a r d   i n t e r r u p t ", "red")
+            sys.exit(0)
+        responselength = len(r.text)
+        
+        if r.status_code != 200 and r.status_code != 404:
+            print("\r", "FOUND:",xyz,"|" ,"STATUS CODE:",r.status_code,"|","Responselength:",responselength)
+        elif r.status_code == 429:
+            cprint("RATE LIMITED", "red")
             exit()
+        else:
+            if ("-v") in inp:
+                print("\r","Fuzzing... -->",xyz, r.status_code)
+            else:
+                print("\r","Fuzzing... -->",xyz,end="                                ")
 
 
-if not ("http") in inp:
-    domain = "http://" + domain
+    # REQUEST
+    def req(xyz):
+        try:
+            r = requests.get(xyz,verify=False)
+        except KeyboardInterrupt:
+            cprint("k e y b o a r d   i n t e r r u p t ", "red")
+            sys.exit(0)
+        responselength = len(r.text)
+        
+        if r.status_code != 200 and r.status_code != 404:
+            print("\r", "FOUND:",xyz,"|" ,"STATUS CODE:",r.status_code,"|","Responselength:",responselength)
+        elif r.status_code == 429:
+            cprint("RATE LIMITED", "red")
+            exit()
+        else:
+            if ("-v") in inp:
+                print("\r","Fuzzing... -->",xyz, r.status_code)
+            else:
+                print("\r","Fuzzing... -->",xyz,end="                                ")
 
 
-# WORDLISTS CHANGE THESE
-defaultsub_wl = "/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt"  # WORDLISTS CHANGE THESE
-apache_wl = "/usr/share/wordlists/dirbuster/apachewordlist" # WORDLISTS CHANGE THESE
-php_wl = "/usr/share/wordlists/dirbuster/wordlistphp" # WORDLISTS CHANGE THESE
-defaultdir_wl = "/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt" # WORDLISTS CHANGE THESE
-phpapache_mixedir = "/usr/share/wordlists/dirbuster/aphpache"
-# WORDLISTS CHANGE THESE
+    # HELP
+    def call_error():
+        cprint("""Usage: 
+        m1 
+        <url/FUZZ> [command]
+        
+    Available Commands:
+        FUZZ. /FUZZ       Uses fuzzing mode. Replaces the keyword FUZZ in the URL 
+        -proxy            Rotates proxies, using the yourproxies.py file. YOU NEED TO ADD THEM
+        -v                SUUUPER verbose output / default is already verbose
+        -php              Also fuzzing for php directories    | can do both
+        -apache           Also fuzzing for apache directories | can do both
+        -git              Git repository for further help
+        -version          shows the current version
+        -help             Lists all possible Commands""", "magenta")
+        all() 
 
 
-if ("FUZZ.") in domain:
-    if ("php") in inp:
-        cprint("Invalid command. Try -help", 'red')
+    if ("version") in inp:
+        cprint("0.3", "red")
         exit()
-    elif ("apache") in inp:
-        cprint("Invalid command. Try -help", 'red')
+
+
+    if ("git") in inp:
+        cprint("https://github.com/1momo7/m1-Fuzzer","blue")
         exit()
-    else:
-        with open(defaultsub_wl) as data: # CHANGEABLE WORDLIST
-            content = data.readlines()
-            for sub in content:
-                cleansub = sub.replace("\n", "")
-                cleandomain = domain.replace("FUZZ", cleansub)
-                req(cleandomain)
 
 
-if ("/FUZZ") in domain:
-    if ("apache" and "php") in inp:
-        with open(phpapache_mixedir) as data: # CHANGEABLE WORDLIST
-            content = data.readlines()
-            for word in content:
-                cleanword = word.replace("\n", "")
-                cleandomain = domain.replace("FUZZ", cleanword)
-                req(cleandomain)
-    if ("apache" or "-apache") in inp:
-        with open(apache_wl) as data: # CHANGEABLE WORDLIST
-            content = data.readlines()
-            for word in content:
-                cleanword = word.replace("\n", "")
-                cleandomain = domain.replace("FUZZ", cleanword)
-                req(cleandomain)
-    elif ("php" or "-php") in inp:
-        with open(php_wl) as data: # CHANGEABLE WORDLIST
-            content = data.readlines()
-            for word in content:
-                cleanword = word.replace("\n", "")
-                cleandomain = domain.replace("FUZZ", cleanword)
-                req(cleandomain)         
-    else:
-        with open(defaultdir_wl) as data: # CHANGEABLE WORDLIST
-            content = data.readlines()
-            for word in content:
-                cleanword = word.replace("\n", "")
-                cleandomain = domain.replace("FUZZ", cleanword)
-                req(cleandomain)
+    if not ("FUZZ") in domain:
+                cprint("Please include FUZZ to tell me what you are FUZZING for...", "red")
+                call_error()
+                exit()
 
 
+    if not ("http") in inp:
+        domain = "http://" + domain
+
+
+    # WORDLISTS CHANGE THESE
+    defaultsub_wl = "/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt"
+    apache_wl = "/usr/share/wordlists/dirbuster/apachewordlist"
+    php_wl = "/usr/share/wordlists/dirbuster/wordlistphp"
+    defaultdir_wl = "/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt"
+    phpapache_mixedir = "/usr/share/wordlists/dirbuster/aphpache"
+
+
+    # COMMANDS .FUZZ    
+    if ("FUZZ.") in domain:
+        if ("php") in inp:
+            cprint("Invalid command. Try -help", 'red')
+            exit()
+        elif ("apache") in inp:
+            cprint("Invalid command. Try -help", 'red')
+            exit()
+        else:
+            with open(defaultsub_wl) as data: # CHANGEABLE WORDLIST
+                content = data.readlines()
+                for sub in content:
+                    cleansub = sub.replace("\n", "")
+                    cleandomain = domain.replace("FUZZ", cleansub)
+                    if ("-proxy") in inp:
+                        cprint("ONLY DO THIS IF YOU ADDED PROXIES TO yourproxies.py", "red")
+                        question = input("Continue? Y / n / exit")
+                        if question == ("y" or "Y"):
+                            reqprox(cleandomain)
+                        elif question == ("exit"):
+                            exit()
+                        else:
+                            all()
+                    else:
+                        req(cleandomain)
+
+
+    # COMMANDS /FUZZ
+    if ("/FUZZ") in domain:
+        if ("apache" and "php") in inp:
+            with open(phpapache_mixedir) as data: # CHANGEABLE WORDLIST
+                content = data.readlines()
+                for word in content:
+                    cleanword = word.replace("\n", "")
+                    cleandomain = domain.replace("FUZZ", cleanword)
+                    if ("-proxy") in inp:
+                        cprint("ONLY DO THIS IF YOU ADDED PROXIES TO yourproxies.py", "red")
+                        question = input("Continue? Y / n / exit")
+                        if question == ("y" or "Y"):
+                            reqprox(cleandomain)
+                        elif question == ("exit"):
+                            exit()
+                        else:
+                            all()
+                    else:
+                        req(cleandomain)
+        if ("apache" or "-apache") in inp:
+            with open(apache_wl) as data: # CHANGEABLE WORDLIST
+                content = data.readlines()
+                for word in content:
+                    cleanword = word.replace("\n", "")
+                    cleandomain = domain.replace("FUZZ", cleanword)
+                    if ("-proxy") in inp:
+                        cprint("ONLY DO THIS IF YOU ADDED PROXIES TO yourproxies.py", "red")
+                        question = input("Continue? Y / n / exit ")
+                        if question == ("y" or "Y"):
+                            reqprox(cleandomain)
+                        elif question == ("exit"):
+                            exit()
+                        else:
+                            all()
+                    else:
+                        req(cleandomain)
+        elif ("php" or "-php") in inp:
+            with open(php_wl) as data: # CHANGEABLE WORDLIST
+                content = data.readlines()
+                for word in content:
+                    cleanword = word.replace("\n", "")
+                    cleandomain = domain.replace("FUZZ", cleanword)
+                    if ("-proxy") in inp:
+                        cprint("ONLY DO THIS IF YOU ADDED PROXIES TO yourproxies.py", "red")
+                        question = input("Continue? Y / n / exit ")
+                        if question == ("y" or "Y"):
+                            reqprox(cleandomain)
+                        elif question == ("exit"):
+                            exit()
+                        else:
+                            all()
+                    else:
+                        req(cleandomain)   
+        else:
+            with open(defaultdir_wl) as data: # CHANGEABLE WORDLIST
+                content = data.readlines()
+                for word in content:
+                    cleanword = word.replace("\n", "")
+                    cleandomain = domain.replace("FUZZ", cleanword)
+                    if ("-proxy") in inp:
+                        cprint("ONLY DO THIS IF YOU ADDED PROXIES TO yourproxies.py", "red")
+                        question = input("Continue? Y / n / exit ")
+                        if question == ("y" or "Y"):
+                            reqprox(cleandomain)
+                        elif question == ("exit"):
+                            exit()
+                        else:
+                            all()
+                    else:
+                        req(cleandomain)
+
+
+# DONT CHANGE
+all()
+    
 
 
  
