@@ -43,7 +43,7 @@ def all():
     # REQUEST WITH PROXIES
     def reqprox(xyz):
         try:
-            r = requests.get(xyz, proxies=proxy,verify=False)
+            r = requests.get(xyz, proxies=[proxy],verify=False)
         except KeyboardInterrupt:
             cprint("k e y b o a r d   i n t e r r u p t ", "red")
             sys.exit(0)
